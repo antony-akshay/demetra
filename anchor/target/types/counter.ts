@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/counter.json`.
  */
 export type Counter = {
-  "address": "Count3AcZucFDPSFBAeHkQ6AvttieKUkyJ8HiQGhQwe",
+  "address": "4yGygWL87SGoAREFyAXSetn6LnZnU9nk1gbcJncFfduZ",
   "metadata": {
     "name": "counter",
     "version": "0.1.0",
@@ -14,16 +14,16 @@ export type Counter = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "initializeElection",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
+        122,
+        239,
+        72,
+        185,
+        101,
+        137,
+        103,
+        222
       ],
       "accounts": [
         {
@@ -32,132 +32,185 @@ export type Counter = {
           "signer": true
         },
         {
-          "name": "counter",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "counter",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "counter",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
-        {
-          "name": "payer",
+          "name": "electionAccount",
           "writable": true,
-          "signer": true
-        },
-        {
-          "name": "counter",
-          "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "name"
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "startTime",
+          "type": "u8"
+        },
+        {
+          "name": "endTime",
+          "type": "u8"
+        }
+      ]
     },
     {
-      "name": "set",
+      "name": "addCandidate",
       "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
+        86,
+        167,
+        52,
+        100,
+        179,
+        155,
+        32,
+        151
       ],
       "accounts": [
         {
-          "name": "counter",
-          "writable": true
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "electionAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "name"
+              },
+              {
+                "kind": "account",
+                "path": "election_account.owner",
+                "account": "electionAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidateAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "electionAccount"
+              },
+              {
+                "kind": "account",
+                "path": "election_account.total_candidates",
+                "account": "electionAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "name",
+          "type": "string"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "counter",
+      "name": "candidateAccount",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        69,
+        203,
+        73,
+        43,
+        203,
+        170,
+        96,
+        121
+      ]
+    },
+    {
+      "name": "electionAccount",
+      "discriminator": [
+        111,
+        137,
+        198,
+        158,
+        227,
+        5,
+        86,
+        255
       ]
     }
   ],
   "types": [
     {
-      "name": "counter",
+      "name": "candidateAccount",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "totalVotes",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "electionAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "totalCandidates",
+            "type": "u8"
+          },
+          {
+            "name": "startTime",
+            "type": "u8"
+          },
+          {
+            "name": "endTime",
+            "type": "u8"
+          },
+          {
+            "name": "winner",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
           }
         ]
       }

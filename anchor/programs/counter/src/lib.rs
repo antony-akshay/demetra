@@ -21,6 +21,15 @@ pub mod counter {
             winner: None,
             total_candidates: 0,
             bump: ctx.bumps.election_account,
+            owner: ctx.accounts.payer.key(),
+        };
+        Ok(())
+    }
+
+    pub fn addCandidate(ctx: Context<AddCandidate>, name: String) -> Result<()> {
+        *ctx.accounts.candidate_account = CandidateAccount {
+            name: name,
+            total_votes: 0,
         };
         Ok(())
     }
@@ -48,40 +57,34 @@ pub struct InitializeElection<'info> {
 }
 
 #[derive(Accounts)]
-pub struct InitializeCounter<'info> {
+#[instruction(name:String)]
+pub struct AddCandidate<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
     #[account(
-  init,
-  space = 8 + Counter::INIT_SPACE,
-  payer = payer
+        mut,
+        seeds=[
+            name.as_bytes(),
+            election_account.owner.key().as_ref(),
+        ],
+        bump,
     )]
-    pub counter: Account<'info, Counter>,
+    pub election_account: Account<'info, ElectionAccount>,
+
+    #[account(
+        init,
+        payer=payer,
+        space=8+CandidateAccount::INIT_SPACE,
+        seeds=[
+            election_account.key().as_ref(),
+            &election_account.total_candidates.to_le_bytes()
+        ],
+        bump
+    )]
+    pub candidate_account: Account<'info, CandidateAccount>,
+
     pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseCounter<'info> {
-    #[account(mut)]
-    pub payer: Signer<'info>,
-
-    #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-    )]
-    pub counter: Account<'info, Counter>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-    #[account(mut)]
-    pub counter: Account<'info, Counter>,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct Counter {
-    count: u8,
 }
 
 #[account]
@@ -94,4 +97,13 @@ pub struct ElectionAccount {
     end_time: u8,
     winner: Option<Pubkey>,
     bump: u8,
+    owner: Pubkey,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct CandidateAccount {
+    #[max_len(32)]
+    name: String,
+    total_votes: u8,
 }
