@@ -1,0 +1,14 @@
+/home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/deps/libserde-fbd552efd194ca67.rmeta: /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/build/serde-0d5f8eac1eafbb77/out/private.rs
+
+/home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/deps/libserde-fbd552efd194ca67.rlib: /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/build/serde-0d5f8eac1eafbb77/out/private.rs
+
+/home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/deps/serde-fbd552efd194ca67.d: /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/build/serde-0d5f8eac1eafbb77/out/private.rs
+
+/home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs:
+/home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs:
+/home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs:
+/home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs:
+/home/noah/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs:
+/home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/build/serde-0d5f8eac1eafbb77/out/private.rs:
+
+# env-dep:OUT_DIR=/home/noah/projects/solana_projects/demetra/anchor/target/sbpf-solana-solana/release/build/serde-0d5f8eac1eafbb77/out
