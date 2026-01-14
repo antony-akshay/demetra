@@ -1,6 +1,6 @@
 import * as anchor from '@coral-xyz/anchor'
 import { Program } from '@coral-xyz/anchor'
-import { Keypair } from '@solana/web3.js'
+import { Keypair, PublicKey } from '@solana/web3.js'
 import { Counter } from '../target/types/counter'
 
 describe('counter', () => {
@@ -11,66 +11,47 @@ describe('counter', () => {
 
   const program = anchor.workspace.Counter as Program<Counter>
 
-  const counterKeypair = Keypair.generate()
+  it('Initialize election account', async () => {
 
-  it('Initialize Counter', async () => {
-    await program.methods
-      .initialize()
+    const [electionAccountPda, electionBump] =
+      PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("leader"),                 // name.as_bytes()
+          payer.publicKey.toBuffer(),         // payer.key().as_ref()
+        ],
+        program.programId
+      );
+
+    console.log("this is the public key of the user:", payer.publicKey)
+    await (program.methods
+      .initializeElection('leader', 0, 0) as any)
       .accounts({
-        counter: counterKeypair.publicKey,
-        payer: payer.publicKey,
-      })
-      .signers([counterKeypair])
-      .rpc()
-
-    const currentCount = await program.account.counter.fetch(counterKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(0)
-  })
-
-  it('Increment Counter', async () => {
-    await program.methods.increment().accounts({ counter: counterKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.counter.fetch(counterKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Increment Counter Again', async () => {
-    await program.methods.increment().accounts({ counter: counterKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.counter.fetch(counterKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(2)
-  })
-
-  it('Decrement Counter', async () => {
-    await program.methods.decrement().accounts({ counter: counterKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.counter.fetch(counterKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Set counter value', async () => {
-    await program.methods.set(42).accounts({ counter: counterKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.counter.fetch(counterKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(42)
-  })
-
-  it('Set close the counter account', async () => {
-    await program.methods
-      .close()
-      .accounts({
-        payer: payer.publicKey,
-        counter: counterKeypair.publicKey,
+        electionAccount: electionAccountPda,
       })
       .rpc()
 
-    // The account should no longer exist, returning null.
-    const userAccount = await program.account.counter.fetchNullable(counterKeypair.publicKey)
-    expect(userAccount).toBeNull()
+    const electionacc = await program.account.electionAccount.fetch(electionAccountPda);
+
+    const [candidateAccountPda, candidatebump] =
+      PublicKey.findProgramAddressSync([
+        electionAccountPda.toBuffer(),
+        Buffer.from([electionacc.totalCandidates])
+      ], program.programId);
+
+    const electionAcc = await program.account.electionAccount.fetch(electionAccountPda)
+
+    expect(electionAcc.totalCandidates).toEqual(0)
+
+    console.log(electionAcc)
+
+    await (program.methods.addCandidate('') as any).
+      accounts({
+        electionAccount: electionAccountPda,
+        candidateAccount: candidateAccountPda
+      }).rpc();
+
+    console.log(electionAcc)
+    const candidateAcc = await program.account.candidateAccount.fetch(candidateAccountPda)
+    console.log(candidateAcc)
   })
 })
