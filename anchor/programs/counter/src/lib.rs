@@ -31,6 +31,14 @@ pub mod counter {
             name: name,
             total_votes: 0,
         };
+
+        ctx.accounts.election_account.total_candidates += 1;
+        Ok(())
+    }
+
+    pub fn vote(ctx: Context<Vote>, candidate_account: Pubkey) -> Result<()> {
+        let candidate_account = &mut ctx.accounts.candidate_account;
+        candidate_account.total_votes += 1;
         Ok(())
     }
 }
@@ -76,6 +84,34 @@ pub struct AddCandidate<'info> {
         init,
         payer=payer,
         space=8+CandidateAccount::INIT_SPACE,
+        seeds=[
+            election_account.key().as_ref(),
+            &election_account.total_candidates.to_le_bytes()
+        ],
+        bump
+    )]
+    pub candidate_account: Account<'info, CandidateAccount>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Vote<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds=[
+            name.as_bytes(),
+            election_account.owner.key().as_ref(),
+        ],
+        bump,
+    )]
+    pub election_account: Account<'info, ElectionAccount>,
+
+    #[account(
+        mut,
         seeds=[
             election_account.key().as_ref(),
             &election_account.total_candidates.to_le_bytes()
