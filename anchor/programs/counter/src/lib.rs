@@ -36,7 +36,7 @@ pub mod counter {
         Ok(())
     }
 
-    pub fn vote(ctx: Context<Vote>, candidate_account: Pubkey) -> Result<()> {
+    pub fn vote(ctx: Context<Vote>) -> Result<()> {
         let candidate_account = &mut ctx.accounts.candidate_account;
         candidate_account.total_votes += 1;
         Ok(())
@@ -103,7 +103,7 @@ pub struct Vote<'info> {
     #[account(
         mut,
         seeds=[
-            name.as_bytes(),
+            election_account.name.as_bytes(),
             election_account.owner.key().as_ref(),
         ],
         bump,
