@@ -1,18 +1,57 @@
-import { Keypair, PublicKey } from '@solana/web3.js'
-import { useMemo } from 'react'
 import { ExplorerLink } from '@/components/cluster/cluster-ui'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ellipsify } from '@/lib/utils'
+import { PublicKey } from '@solana/web3.js'
+import { useEffect, useMemo } from 'react'
 import { useCounterProgram, useCounterProgramAccount } from './counter-data-access'
+import * as anchor from "@coral-xyz/anchor"
+import { useWallet } from '@solana/wallet-adapter-react'
+
 
 export function CounterCreate() {
-  const { initialize } = useCounterProgram()
+  const { initializeElection } = useCounterProgram()
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const name = formData.get('name') as string
+    const startTimestamp = Math.floor(
+      new Date(formData.get("start_time") as string).getTime() / 1000
+    );
+    const endTimestamp = Math.floor(
+      new Date(formData.get("end_time") as string).getTime() / 1000
+    );
+    const startTime = new anchor.BN(startTimestamp);
+    const endTime = new anchor.BN(endTimestamp);
+
+    initializeElection.mutateAsync({ name, startTime, endTime })
+  }
 
   return (
-    <Button onClick={() => initialize.mutateAsync(Keypair.generate())} disabled={initialize.isPending}>
-      Create {initialize.isPending && '...'}
-    </Button>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name='name' placeholder='name' className='w-full px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input
+            type="datetime-local"
+            name="start_time"
+            placeholder="start_time"
+            className="w-full px-4 py-3 border-2 border-black text-black rounded bg-white focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow"
+          />
+          <input
+            type="datetime-local"
+            name="end_time"
+            placeholder="end_time"
+            className="w-full px-4 py-3 border-2 border-black text-black rounded bg-white focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow"
+          />
+        </div>
+
+        <Button type="submit" disabled={initializeElection.isPending}>
+          Create {initializeElection.isPending && '...'}
+        </Button>
+      </form>
+    </>
   )
 }
 
@@ -54,40 +93,57 @@ function CounterCard({ account }: { account: PublicKey }) {
     account,
   })
 
-  const count = useMemo(() => accountQuery.data?.count ?? 0, [accountQuery.data?.count])
+  const publickey = useWallet();
+
+  const { addCandidate, candidateAccounts, programId } = useCounterProgram();
+
+  const a = candidateAccounts.data
+  let candidates = a?.filter((a1) =>
+    a1.account.electionAccount.equals(account))
+
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    console.log("clicked add candidate")
+    const formData = new FormData(e.currentTarget)
+    const name = formData.get('name') as string
+
+    const [candidateAccount, candidatebump] =
+      PublicKey.findProgramAddressSync([
+        account.toBuffer(),
+        publickey.publicKey!.toBuffer(),
+      ], programId);
+
+    addCandidate.mutateAsync({ name, candidateAccount, electionAccount:account })
+  }
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
   ) : (
     <Card>
       <CardHeader>
-        <CardTitle>Counter: {count}</CardTitle>
+        <CardTitle>{accountQuery.data?.name}</CardTitle>
         <CardDescription>
-          Account: <ExplorerLink path={`account/${account}`} label={ellipsify(account.toString())} />
+          {/* Account: <ExplorerLink path={`account/${account}`} label={ellipsify(account.toString())} /> */}
+          {accountQuery.data?.startTime.toString()}
+          {"--" + accountQuery.data?.endTime.toString()}
         </CardDescription>
       </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <div className='flex'>
+          <input type="text" name='name' placeholder='name' className='w-150 ml-5 px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
+          <Button
+            className='ml-5 h-13 mr-4'
+            type='submit'
+            variant="outline"
+            disabled={addCandidate.isPending}
+          >
+            Add  Candidate
+          </Button>
+        </div>
+      </form>
       <CardContent>
         <div className="flex gap-4">
-          <Button
-            variant="outline"
-            onClick={() => incrementMutation.mutateAsync()}
-            disabled={incrementMutation.isPending}
-          >
-            Increment
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              const value = window.prompt('Set value to:', count.toString() ?? '0')
-              if (!value || parseInt(value) === count || isNaN(parseInt(value))) {
-                return
-              }
-              return setMutation.mutateAsync(parseInt(value))
-            }}
-            disabled={setMutation.isPending}
-          >
-            Set
-          </Button>
           <Button
             variant="outline"
             onClick={() => decrementMutation.mutateAsync()}
@@ -109,6 +165,13 @@ function CounterCard({ account }: { account: PublicKey }) {
           </Button>
         </div>
       </CardContent>
+      <div>
+        {candidates?.map((candidate) => (
+          <div>
+            {candidate.publicKey.toString()}
+          </div>
+        ))}
+      </div>
     </Card>
   )
 }

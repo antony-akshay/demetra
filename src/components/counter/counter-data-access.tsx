@@ -1,12 +1,26 @@
 import { getCounterProgram, getCounterProgramId } from '@project/anchor'
 import { useConnection } from '@solana/wallet-adapter-react'
-import { Cluster, Keypair, PublicKey } from '@solana/web3.js'
+import { Cluster, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useCluster } from '@/components/cluster/cluster-data-access'
 import { useAnchorProvider } from '@/components/solana/use-anchor-provider'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { toast } from 'sonner'
+import * as anchor from "@coral-xyz/anchor"
+
+
+interface initializeElectionArgs {
+  name: string,
+  startTime: anchor.BN;
+  endTime: anchor.BN;
+}
+
+interface addCandidateArgs {
+  name: string,
+  candidateAccount: PublicKey,
+  electionAccount: PublicKey
+}
 
 export function useCounterProgram() {
   const { connection } = useConnection()
@@ -18,7 +32,12 @@ export function useCounterProgram() {
 
   const accounts = useQuery({
     queryKey: ['counter', 'all', { cluster }],
-    queryFn: () => program.account.counter.all(),
+    queryFn: () => program.account.electionAccount.all(),
+  })
+
+  const candidateAccounts = useQuery({
+    queryKey: ['candidate', 'all', { cluster }],
+    queryFn: () => program.account.candidateAccount.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -26,10 +45,26 @@ export function useCounterProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
-  const initialize = useMutation({
-    mutationKey: ['counter', 'initialize', { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ counter: keypair.publicKey }).signers([keypair]).rpc(),
+  const initializeElection = useMutation<string, Error, initializeElectionArgs>({
+    mutationKey: ['create', 'election', { cluster }],
+    mutationFn: ({ name, startTime, endTime }) =>
+      program.methods.initializeElection(name, startTime, endTime).accounts({}).rpc(),
+    onSuccess: async (signature) => {
+      transactionToast(signature)
+      await accounts.refetch()
+    },
+    onError: () => {
+      toast.error('Failed to initialize account')
+    },
+  })
+
+  const addCandidate = useMutation<string, Error, addCandidateArgs>({
+    mutationKey: ['add', 'candidate', { cluster }],
+    mutationFn: ({ name, candidateAccount, electionAccount }) =>
+      (program.methods.addCandidate(name) as any).accounts({
+        candidateAccount: candidateAccount,
+        electionAccount: electionAccount
+      }).rpc(),
     onSuccess: async (signature) => {
       transactionToast(signature)
       await accounts.refetch()
@@ -43,8 +78,10 @@ export function useCounterProgram() {
     program,
     programId,
     accounts,
+    candidateAccounts,
     getProgramAccount,
-    initialize,
+    initializeElection,
+    addCandidate
   }
 }
 
@@ -55,7 +92,7 @@ export function useCounterProgramAccount({ account }: { account: PublicKey }) {
 
   const accountQuery = useQuery({
     queryKey: ['counter', 'fetch', { cluster, account }],
-    queryFn: () => program.account.counter.fetch(account),
+    queryFn: () => program.account.electionAccount.fetch(account),
   })
 
   const closeMutation = useMutation({
