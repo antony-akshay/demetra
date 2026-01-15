@@ -107,11 +107,11 @@ export type Counter = {
         },
         {
           "name": "startTime",
-          "type": "u8"
+          "type": "i64"
         },
         {
           "name": "endTime",
-          "type": "u8"
+          "type": "i64"
         }
       ]
     },
@@ -303,11 +303,11 @@ export type Counter = {
           },
           {
             "name": "startTime",
-            "type": "u8"
+            "type": "i64"
           },
           {
             "name": "endTime",
-            "type": "u8"
+            "type": "i64"
           },
           {
             "name": "winner",

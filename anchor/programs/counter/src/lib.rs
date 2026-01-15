@@ -11,8 +11,8 @@ pub mod counter {
     pub fn InitializeElection(
         ctx: Context<InitializeElection>,
         name: String,
-        start_time: u8,
-        end_time: u8,
+        start_time: i64,
+        end_time: i64,
     ) -> Result<()> {
         *ctx.accounts.election_account = ElectionAccount {
             name: name,
@@ -155,8 +155,8 @@ pub struct ElectionAccount {
     #[max_len(32)]
     name: String,
     total_candidates: u8,
-    start_time: u8,
-    end_time: u8,
+    start_time: i64,
+    end_time: i64,
     winner: Option<Pubkey>,
     bump: u8,
     owner: Pubkey,

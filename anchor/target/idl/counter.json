@@ -101,11 +101,11 @@
         },
         {
           "name": "start_time",
-          "type": "u8"
+          "type": "i64"
         },
         {
           "name": "end_time",
-          "type": "u8"
+          "type": "i64"
         }
       ]
     },
@@ -297,11 +297,11 @@
           },
           {
             "name": "start_time",
-            "type": "u8"
+            "type": "i64"
           },
           {
             "name": "end_time",
-            "type": "u8"
+            "type": "i64"
           },
           {
             "name": "winner",
