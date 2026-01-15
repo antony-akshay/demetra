@@ -73,7 +73,7 @@ pub struct AddCandidate<'info> {
     #[account(
         mut,
         seeds=[
-            name.as_bytes(),
+            election_account.name.as_bytes(),
             election_account.owner.key().as_ref(),
         ],
         bump,
@@ -86,7 +86,7 @@ pub struct AddCandidate<'info> {
         space=8+CandidateAccount::INIT_SPACE,
         seeds=[
             election_account.key().as_ref(),
-            &election_account.total_candidates.to_le_bytes()
+            payer.key().as_ref()
         ],
         bump
     )]

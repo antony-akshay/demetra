@@ -8,19 +8,22 @@ describe('counter', () => {
   const provider = anchor.AnchorProvider.env()
   anchor.setProvider(provider)
   const payer = provider.wallet as anchor.Wallet
+  const payer2 = provider.wallet as anchor.Wallet
 
   const program = anchor.workspace.Counter as Program<Counter>
 
-  it('Initialize election account', async () => {
+  const name = "leader";
 
-    const [electionAccountPda, electionBump] =
-      PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("leader"),                 // name.as_bytes()
-          payer.publicKey.toBuffer(),         // payer.key().as_ref()
-        ],
-        program.programId
-      );
+  const [electionAccountPda, electionBump] =
+    PublicKey.findProgramAddressSync(
+      [
+        Buffer.from(name, "utf8"),
+        payer.publicKey.toBuffer(),
+      ],
+      program.programId
+    );
+
+  it('Initialize election account', async () => {
 
     console.log("this is the public key of the user:", payer.publicKey)
     await (program.methods
@@ -30,28 +33,56 @@ describe('counter', () => {
       })
       .rpc()
 
+    const electionAcc = await program.account.electionAccount.fetch(electionAccountPda)
+
+    expect(electionAcc.totalCandidates).toEqual(0)
+
+    console.log("this is the election acc:", electionAcc)
+
+    // await (program.methods.addCandidate('') as any).
+    //   accounts({
+    //     electionAccount: electionAccountPda,
+    //     candidateAccount: candidateAccountPda
+    //   }).rpc();
+
+    // console.log(electionAcc)
+    // const candidateAcc = await program.account.candidateAccount.fetch(candidateAccountPda)
+    // console.log(candidateAcc)
+  })
+
+
+  it("initilaiseCandidate", async () => {
+
     const electionacc = await program.account.electionAccount.fetch(electionAccountPda);
 
     const [candidateAccountPda, candidatebump] =
       PublicKey.findProgramAddressSync([
         electionAccountPda.toBuffer(),
-        Buffer.from([electionacc.totalCandidates])
+        payer.publicKey.toBuffer(),
       ], program.programId);
 
-    const electionAcc = await program.account.electionAccount.fetch(electionAccountPda)
+    const [candidate2AccountPda, candidate2bump] =
+      PublicKey.findProgramAddressSync([
+        electionAccountPda.toBuffer(),
+        payer2.publicKey.toBuffer(),
+      ], program.programId);
 
-    expect(electionAcc.totalCandidates).toEqual(0)
 
-    console.log(electionAcc)
-
-    await (program.methods.addCandidate('') as any).
+    await (program.methods.addCandidate('akshay') as any).
       accounts({
         electionAccount: electionAccountPda,
         candidateAccount: candidateAccountPda
       }).rpc();
 
-    console.log(electionAcc)
-    const candidateAcc = await program.account.candidateAccount.fetch(candidateAccountPda)
-    console.log(candidateAcc)
+    await (program.methods.addCandidate('antony') as any).
+      accounts({
+        electionAccount: electionAccountPda,
+        candidateAccount: candidate2AccountPda
+      }).rpc();
+
+    const candidate = await program.account.candidateAccount.fetch(candidateAccountPda);
+    const electionacc2 = await program.account.electionAccount.fetch(electionAccountPda);
+    console.log(candidate)
+    console.log(electionacc2)
   })
 })

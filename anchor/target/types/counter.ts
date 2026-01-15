@@ -91,8 +91,9 @@ export type Counter = {
           "pda": {
             "seeds": [
               {
-                "kind": "arg",
-                "path": "name"
+                "kind": "account",
+                "path": "election_account.name",
+                "account": "electionAccount"
               },
               {
                 "kind": "account",
@@ -113,8 +114,7 @@ export type Counter = {
               },
               {
                 "kind": "account",
-                "path": "election_account.total_candidates",
-                "account": "electionAccount"
+                "path": "payer"
               }
             ]
           }

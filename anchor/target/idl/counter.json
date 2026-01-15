@@ -85,8 +85,9 @@
           "pda": {
             "seeds": [
               {
-                "kind": "arg",
-                "path": "name"
+                "kind": "account",
+                "path": "election_account.name",
+                "account": "ElectionAccount"
               },
               {
                 "kind": "account",
@@ -107,8 +108,7 @@
               },
               {
                 "kind": "account",
-                "path": "election_account.total_candidates",
-                "account": "ElectionAccount"
+                "path": "payer"
               }
             ]
           }
