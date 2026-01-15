@@ -178,8 +178,7 @@ export type Counter = {
               },
               {
                 "kind": "account",
-                "path": "election_account.total_candidates",
-                "account": "electionAccount"
+                "path": "payer"
               }
             ]
           }

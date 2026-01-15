@@ -8,7 +8,6 @@ describe('counter', () => {
   const provider = anchor.AnchorProvider.env()
   anchor.setProvider(provider)
   const payer = provider.wallet as anchor.Wallet
-  const payer2 = provider.wallet as anchor.Wallet
 
   const program = anchor.workspace.Counter as Program<Counter>
 
@@ -61,28 +60,34 @@ describe('counter', () => {
         payer.publicKey.toBuffer(),
       ], program.programId);
 
-    const [candidate2AccountPda, candidate2bump] =
-      PublicKey.findProgramAddressSync([
-        electionAccountPda.toBuffer(),
-        payer2.publicKey.toBuffer(),
-      ], program.programId);
 
-
-    await (program.methods.addCandidate('akshay') as any).
+    await (program.methods.addCandidate('askhay') as any).
       accounts({
         electionAccount: electionAccountPda,
         candidateAccount: candidateAccountPda
-      }).rpc();
-
-    await (program.methods.addCandidate('antony') as any).
-      accounts({
-        electionAccount: electionAccountPda,
-        candidateAccount: candidate2AccountPda
       }).rpc();
 
     const candidate = await program.account.candidateAccount.fetch(candidateAccountPda);
     const electionacc2 = await program.account.electionAccount.fetch(electionAccountPda);
     console.log(candidate)
     console.log(electionacc2)
+  })
+
+  it("vote", async () => {
+
+    const [candidateAccountPda, candidatebump] =
+      PublicKey.findProgramAddressSync([
+        electionAccountPda.toBuffer(),
+        payer.publicKey.toBuffer(),
+      ], program.programId);
+
+
+    await (program.methods.vote() as any).accounts({
+      electionAccount: electionAccountPda,
+      candidateAccount:candidateAccountPda
+    }).rpc()
+
+    const candidate = await program.account.candidateAccount.fetch(candidateAccountPda)
+    console.log(candidate)
   })
 })

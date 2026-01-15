@@ -41,6 +41,10 @@ pub mod counter {
         candidate_account.total_votes += 1;
         Ok(())
     }
+
+    pub fn ChooseWinner(ctx: Context<ChooseWinner>) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -114,13 +118,21 @@ pub struct Vote<'info> {
         mut,
         seeds=[
             election_account.key().as_ref(),
-            &election_account.total_candidates.to_le_bytes()
+            payer.key().as_ref()
         ],
         bump
     )]
     pub candidate_account: Account<'info, CandidateAccount>,
 
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ChooseWinner<'info>{
+    #[account(mut)]
+    pub signer:Signer<'info>,
+
+    
 }
 
 #[account]

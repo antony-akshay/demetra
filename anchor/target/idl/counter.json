@@ -172,8 +172,7 @@
               },
               {
                 "kind": "account",
-                "path": "election_account.total_candidates",
-                "account": "ElectionAccount"
+                "path": "payer"
               }
             ]
           }
