@@ -14,6 +14,54 @@ export type Counter = {
   },
   "instructions": [
     {
+      "name": "chooseWinner",
+      "discriminator": [
+        121,
+        30,
+        2,
+        9,
+        160,
+        253,
+        121,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "electionAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "election_account.name",
+                "account": "electionAccount"
+              },
+              {
+                "kind": "account",
+                "path": "election_account.owner",
+                "account": "electionAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "winner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "initializeElection",
       "discriminator": [
         122,
@@ -232,6 +280,10 @@ export type Counter = {
           {
             "name": "totalVotes",
             "type": "u8"
+          },
+          {
+            "name": "electionAccount",
+            "type": "pubkey"
           }
         ]
       }

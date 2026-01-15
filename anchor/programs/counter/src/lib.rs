@@ -30,6 +30,7 @@ pub mod counter {
         *ctx.accounts.candidate_account = CandidateAccount {
             name: name,
             total_votes: 0,
+            election_account: ctx.accounts.election_account.key(),
         };
 
         ctx.accounts.election_account.total_candidates += 1;
@@ -42,7 +43,10 @@ pub mod counter {
         Ok(())
     }
 
-    pub fn ChooseWinner(ctx: Context<ChooseWinner>) -> Result<()> {
+    pub fn ChooseWinner(ctx: Context<ChooseWinner>, winner: Pubkey) -> Result<()> {
+        let a = &mut ctx.accounts.election_account;
+
+        a.winner = Some(winner);
         Ok(())
     }
 }
@@ -128,11 +132,21 @@ pub struct Vote<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ChooseWinner<'info>{
+pub struct ChooseWinner<'info> {
     #[account(mut)]
-    pub signer:Signer<'info>,
+    pub signer: Signer<'info>,
 
-    
+    #[account(
+        mut,
+        seeds=[
+            election_account.name.as_bytes(),
+            election_account.owner.key().as_ref(),
+        ],
+        bump,
+    )]
+    pub election_account: Account<'info, ElectionAccount>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[account]
@@ -154,4 +168,5 @@ pub struct CandidateAccount {
     #[max_len(32)]
     name: String,
     total_votes: u8,
+    election_account: Pubkey,
 }

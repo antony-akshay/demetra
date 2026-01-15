@@ -8,6 +8,54 @@
   },
   "instructions": [
     {
+      "name": "ChooseWinner",
+      "discriminator": [
+        121,
+        30,
+        2,
+        9,
+        160,
+        253,
+        121,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "election_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "election_account.name",
+                "account": "ElectionAccount"
+              },
+              {
+                "kind": "account",
+                "path": "election_account.owner",
+                "account": "ElectionAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "winner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "InitializeElection",
       "discriminator": [
         122,
@@ -226,6 +274,10 @@
           {
             "name": "total_votes",
             "type": "u8"
+          },
+          {
+            "name": "election_account",
+            "type": "pubkey"
           }
         ]
       }

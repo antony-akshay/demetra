@@ -84,10 +84,43 @@ describe('counter', () => {
 
     await (program.methods.vote() as any).accounts({
       electionAccount: electionAccountPda,
-      candidateAccount:candidateAccountPda
+      candidateAccount: candidateAccountPda
     }).rpc()
 
     const candidate = await program.account.candidateAccount.fetch(candidateAccountPda)
     console.log(candidate)
+  })
+
+  it("choose winner", async () => {
+
+
+    const [electionAccountPda, electionBump] =
+      PublicKey.findProgramAddressSync(
+        [
+          Buffer.from(name, "utf8"),
+          payer.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+
+    const a = await program.account.candidateAccount.all()
+    console.log(electionAccountPda);
+    console.log("candidate_accounts:", a)
+
+    let candidate_of_this_election = a.filter((a1) =>
+      a1.account.electionAccount.equals(electionAccountPda)
+    )
+
+    const winner = candidate_of_this_election.reduce((max, curr) =>
+      curr.account.totalVotes > max.account.totalVotes ? curr : max
+    );
+
+    console.log("Winner:");
+    console.log("PDA:", winner.publicKey.toBase58());
+    console.log("Name:", winner.account.name);
+    console.log("Votes:", winner.account.totalVotes);
+
+    console.log("these are the candidates:", candidate_of_this_election)
   })
 })
