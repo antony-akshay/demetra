@@ -141,7 +141,7 @@ function CounterCard({ account }: { account: PublicKey }) {
           {"--" + accountQuery.data?.endTime.toString()}
         </CardDescription>
       </CardHeader>
-      {!accountQuery.data?.winner ?
+      {(accountQuery.data?.owner.equals(publickey.publicKey!)) ?
         <form onSubmit={handleSubmit}>
           <div className='flex'>
             <input type="text" name='name' placeholder='name' className='w-150 ml-5 px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
