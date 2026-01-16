@@ -26,7 +26,7 @@ describe('counter', () => {
 
     console.log("this is the public key of the user:", payer.publicKey)
     await (program.methods
-      .initializeElection('leader', 0, 0) as any)
+      .initializeElection('leader', new anchor.BN(0), new anchor.BN(0)) as any)
       .accounts({
         electionAccount: electionAccountPda,
       })

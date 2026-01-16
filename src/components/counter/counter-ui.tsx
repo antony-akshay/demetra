@@ -141,28 +141,22 @@ function CounterCard({ account }: { account: PublicKey }) {
           {"--" + accountQuery.data?.endTime.toString()}
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <div className='flex'>
-          <input type="text" name='name' placeholder='name' className='w-150 ml-5 px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
-          <Button
-            className='ml-5 h-13 mr-4'
-            type='submit'
-            variant="outline"
-            disabled={addCandidate.isPending}
-          >
-            Add  Candidate
-          </Button>
-        </div>
-      </form>
-      <CardContent>
+      {!accountQuery.data?.winner ?
+        <form onSubmit={handleSubmit}>
+          <div className='flex'>
+            <input type="text" name='name' placeholder='name' className='w-150 ml-5 px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
+            <Button
+              className='ml-5 h-13 mr-4'
+              type='submit'
+              variant="outline"
+              disabled={addCandidate.isPending}
+            >
+              Add  Candidate
+            </Button>
+          </div>
+        </form> : <></>}
+      {/* <CardContent>
         <div className="flex gap-4">
-          <Button
-            variant="outline"
-            onClick={() => { }}
-          // disabled={}
-          >
-            Decrement
-          </Button>
           <Button
             variant="destructive"
             onClick={() => {
@@ -176,34 +170,36 @@ function CounterCard({ account }: { account: PublicKey }) {
             Close
           </Button>
         </div>
-      </CardContent>
-      <div className='ml-5'>
-        {candidates?.map((candidate) => (
-          <div>
-            {candidate.publicKey.toString()}
-            <Button
-              className='ml-25'
-              variant="destructive"
-              onClick={() => {
-                voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey, electionAccount: account })
-              }}
-            >
-              vote
-            </Button>
-            <div>{candidate.account.totalVotes}</div>
-          </div>
-
-        ))}
-      </div>
+      </CardContent> */}
       <div>
         {!accountQuery.data?.winner ?
-          <Button
-            className='ml-25 bg-green-400'
-            variant="secondary"
-            onClick={handleChooseWinner}
-          >
-            Choose winner
-          </Button>:<div>{accountQuery.data?.winner.toString()}</div>}
+          <>
+            <div className='ml-5 border p-2 rounded mr-5'>
+              {candidates?.map((candidate) => (
+                <div>
+                  {candidate.publicKey.toString()}
+                  <Button
+                    className='ml-25'
+                    variant="destructive"
+                    onClick={() => {
+                      voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey, electionAccount: account })
+                    }}
+                  >
+                    vote
+                  </Button>
+                  {/* <div>{candidate.account.totalVotes}</div> */}
+                </div>
+
+              ))}
+            </div>
+            <Button
+              className='ml-25 bg-green-400'
+              variant="secondary"
+              onClick={handleChooseWinner}
+            >
+              Choose winner
+            </Button>
+          </> : <div className='ml-5 bg-green-400 w-120 rounded font-bold p-2'>{accountQuery.data?.winner.toString()}</div>}
       </div>
     </Card>
   )
