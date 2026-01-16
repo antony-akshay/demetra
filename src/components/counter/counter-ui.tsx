@@ -89,13 +89,13 @@ export function CounterList() {
 }
 
 function CounterCard({ account }: { account: PublicKey }) {
-  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useCounterProgramAccount({
+  const { accountQuery } = useCounterProgramAccount({
     account,
   })
 
   const publickey = useWallet();
 
-  const { addCandidate, candidateAccounts, programId } = useCounterProgram();
+  const { addCandidate, candidateAccounts, programId, voteCandidate } = useCounterProgram();
 
   const a = candidateAccounts.data
   let candidates = a?.filter((a1) =>
@@ -114,7 +114,7 @@ function CounterCard({ account }: { account: PublicKey }) {
         publickey.publicKey!.toBuffer(),
       ], programId);
 
-    addCandidate.mutateAsync({ name, candidateAccount, electionAccount:account })
+    addCandidate.mutateAsync({ name, candidateAccount, electionAccount: account })
   }
 
   return accountQuery.isLoading ? (
@@ -146,8 +146,8 @@ function CounterCard({ account }: { account: PublicKey }) {
         <div className="flex gap-4">
           <Button
             variant="outline"
-            onClick={() => decrementMutation.mutateAsync()}
-            disabled={decrementMutation.isPending}
+            onClick={() => { }}
+          // disabled={}
           >
             Decrement
           </Button>
@@ -157,20 +157,42 @@ function CounterCard({ account }: { account: PublicKey }) {
               if (!window.confirm('Are you sure you want to close this account?')) {
                 return
               }
-              return closeMutation.mutateAsync()
+              // return closeMutation.mutateAsync()
             }}
-            disabled={closeMutation.isPending}
+          // disabled={closeMutation.isPending}
           >
             Close
           </Button>
         </div>
       </CardContent>
-      <div>
+      <div className='ml-5'>
         {candidates?.map((candidate) => (
           <div>
             {candidate.publicKey.toString()}
+            <Button
+              className='ml-25'
+              variant="destructive"
+              onClick={() => {
+                voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey,electionAccount:account })
+              }}
+            >
+              vote
+            </Button>
+            <div>{candidate.account.totalVotes}</div>
           </div>
+
         ))}
+      </div>
+      <div>
+        <Button
+              className='ml-25 bg-green-400'
+              variant="secondary"
+              onClick={() => {
+                // voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey,electionAccount:account })
+              }}
+            >
+              Choose winner
+            </Button>
       </div>
     </Card>
   )
