@@ -27,6 +27,11 @@ interface VoteArgs{
   electionAccount: PublicKey
 }
 
+interface chooseWinnerArgs{
+  electionAccount:PublicKey,
+  winner:PublicKey
+}
+
 export function useCounterProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
@@ -96,6 +101,22 @@ export function useCounterProgram() {
     },
   })
 
+  const chooseWinner = useMutation<string,Error,chooseWinnerArgs>({
+    mutationKey:['choose','winner',{cluster}],
+    mutationFn:({electionAccount,winner})=>(
+      (program.methods.chooseWinner(winner)as any).accounts({
+        electionAccount:electionAccount
+      }).rpc()
+    ),
+    onSuccess: async (signature) => {
+      transactionToast(signature)
+      await candidateAccounts.refetch()
+    },
+    onError: () => {
+      toast.error('Failed to vote')
+    },
+  })
+
   
 
   return {
@@ -106,7 +127,8 @@ export function useCounterProgram() {
     getProgramAccount,
     initializeElection,
     addCandidate,
-    voteCandidate
+    voteCandidate,
+    chooseWinner
   }
 }
 

@@ -95,11 +95,23 @@ function CounterCard({ account }: { account: PublicKey }) {
 
   const publickey = useWallet();
 
-  const { addCandidate, candidateAccounts, programId, voteCandidate } = useCounterProgram();
+  const { addCandidate, candidateAccounts, programId, voteCandidate, chooseWinner } = useCounterProgram();
 
   const a = candidateAccounts.data
   let candidates = a?.filter((a1) =>
     a1.account.electionAccount.equals(account))
+
+  const handleChooseWinner = () => {
+    console.log("clicked choose winner")
+    if (!candidates) return;
+    const winner = candidates?.reduce((max, curr) =>
+      curr.account.totalVotes > max.account.totalVotes ? curr : max
+    );
+
+    console.log(winner)
+
+    chooseWinner.mutateAsync({ winner: winner?.publicKey, electionAccount: account })
+  }
 
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -173,7 +185,7 @@ function CounterCard({ account }: { account: PublicKey }) {
               className='ml-25'
               variant="destructive"
               onClick={() => {
-                voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey,electionAccount:account })
+                voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey, electionAccount: account })
               }}
             >
               vote
@@ -184,15 +196,14 @@ function CounterCard({ account }: { account: PublicKey }) {
         ))}
       </div>
       <div>
-        <Button
-              className='ml-25 bg-green-400'
-              variant="secondary"
-              onClick={() => {
-                // voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey,electionAccount:account })
-              }}
-            >
-              Choose winner
-            </Button>
+        {!accountQuery.data?.winner ?
+          <Button
+            className='ml-25 bg-green-400'
+            variant="secondary"
+            onClick={handleChooseWinner}
+          >
+            Choose winner
+          </Button>:<div>{accountQuery.data?.winner.toString()}</div>}
       </div>
     </Card>
   )
