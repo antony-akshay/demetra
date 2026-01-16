@@ -12,22 +12,30 @@ export default function CounterFeature() {
 
   return publicKey ? (
     <div>
+      <div className="flex justify-center">
+        <img
+          src="https://files.catbox.moe/6x2r14.png"
+          width={100}
+          height={15}
+          alt="Demetra logo"
+        />
+      </div>
       <AppHero
-        title="Counter"
+        title="Demetra"
         subtitle={
-          'Create a new account by clicking the "Create" button. The state of a account is stored on-chain and can be manipulated by calling the program\'s methods (increment, decrement, set, and close).'
+          'Every vote recorded. Every voice respected.'
         }
       >
-        <p className="mb-6">
+        {/* <p className="mb-6">
           <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />
-        </p>
+        </p> */}
         <CounterCreate />
       </AppHero>
       <CounterList />
     </div>
   ) : (
     <div className="max-w-4xl mx-auto">
-      <div className="hero py-[64px]">
+      <div className="hero py-64px">
         <div className="hero-content text-center">
           <WalletButton />
         </div>

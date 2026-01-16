@@ -1,9 +1,6 @@
-import { ExplorerLink } from '@/components/cluster/cluster-ui'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ellipsify } from '@/lib/utils'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PublicKey } from '@solana/web3.js'
-import { useEffect, useMemo } from 'react'
 import { useCounterProgram, useCounterProgramAccount } from './counter-data-access'
 import * as anchor from "@coral-xyz/anchor"
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -113,6 +110,20 @@ function CounterCard({ account }: { account: PublicKey }) {
     chooseWinner.mutateAsync({ winner: winner?.publicKey, electionAccount: account })
   }
 
+  function formatShortDate(unix: number | string) {
+  const date = new Date(Number(unix) * 1000)
+
+  const day = date.getDate()
+  const month = date.toLocaleString('en-US', { month: 'short' })
+  const year = date.getFullYear().toString().slice(-2)
+
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+
+  return `${day} ${month} ${year} ${hours}:${minutes}`
+}
+
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -120,7 +131,7 @@ function CounterCard({ account }: { account: PublicKey }) {
     const formData = new FormData(e.currentTarget)
     const name = formData.get('name') as string
 
-    const [candidateAccount, candidatebump] =
+    const [candidateAccount] =
       PublicKey.findProgramAddressSync([
         account.toBuffer(),
         publickey.publicKey!.toBuffer(),
@@ -136,9 +147,8 @@ function CounterCard({ account }: { account: PublicKey }) {
       <CardHeader>
         <CardTitle>{accountQuery.data?.name}</CardTitle>
         <CardDescription>
+          {formatShortDate(Number(accountQuery.data?.startTime))} - {formatShortDate(Number(accountQuery.data?.endTime))}
           {/* Account: <ExplorerLink path={`account/${account}`} label={ellipsify(account.toString())} /> */}
-          {accountQuery.data?.startTime.toString()}
-          {"--" + accountQuery.data?.endTime.toString()}
         </CardDescription>
       </CardHeader>
       {(accountQuery.data?.owner.equals(publickey.publicKey!)) ?

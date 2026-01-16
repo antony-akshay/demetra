@@ -134,8 +134,7 @@ export function useCounterProgram() {
 
 export function useCounterProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster()
-  const transactionToast = useTransactionToast()
-  const { program, accounts } = useCounterProgram()
+  const { program } = useCounterProgram()
 
   const accountQuery = useQuery({
     queryKey: ['counter', 'fetch', { cluster, account }],
