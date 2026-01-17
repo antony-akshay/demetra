@@ -111,17 +111,17 @@ function CounterCard({ account }: { account: PublicKey }) {
   }
 
   function formatShortDate(unix: number | string) {
-  const date = new Date(Number(unix) * 1000)
+    const date = new Date(Number(unix) * 1000)
 
-  const day = date.getDate()
-  const month = date.toLocaleString('en-US', { month: 'short' })
-  const year = date.getFullYear().toString().slice(-2)
+    const day = date.getDate()
+    const month = date.toLocaleString('en-US', { month: 'short' })
+    const year = date.getFullYear().toString().slice(-2)
 
-  const hours = date.getHours().toString().padStart(2, '0')
-  const minutes = date.getMinutes().toString().padStart(2, '0')
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
 
-  return `${day} ${month} ${year} ${hours}:${minutes}`
-}
+    return `${day} ${month} ${year} ${hours}:${minutes}`
+  }
 
 
 
@@ -133,11 +133,24 @@ function CounterCard({ account }: { account: PublicKey }) {
 
     const [candidateAccount] =
       PublicKey.findProgramAddressSync([
+        Buffer.from(name),
+        account.toBuffer(),
+        // publickey.publicKey!.toBuffer(),
+      ], programId);
+
+    addCandidate.mutateAsync({ name, candidateAccount, electionAccount: account })
+  }
+
+  const handleVote = (candidateccount: PublicKey) => {
+    const [voteAccount] =
+      PublicKey.findProgramAddressSync([
+        Buffer.from('vote'),
         account.toBuffer(),
         publickey.publicKey!.toBuffer(),
       ], programId);
 
-    addCandidate.mutateAsync({ name, candidateAccount, electionAccount: account })
+      voteCandidate.mutateAsync({ candidateAccount: candidateccount, electionAccount: account,voteAccount:voteAccount })
+
   }
 
   return accountQuery.isLoading ? (
@@ -151,7 +164,10 @@ function CounterCard({ account }: { account: PublicKey }) {
           {/* Account: <ExplorerLink path={`account/${account}`} label={ellipsify(account.toString())} /> */}
         </CardDescription>
       </CardHeader>
-      {(accountQuery.data?.owner.equals(publickey.publicKey!)) ?
+      {
+        // (accountQuery.data?.owner.equals(publickey.publicKey!)) 
+
+
         <form onSubmit={handleSubmit}>
           <div className='flex'>
             <input type="text" name='name' placeholder='name' className='w-150 ml-5 px-4 py-3 border-2 mb-5 bg-white rounded text-black focus:outline-none focus:shadow-[4px_4px_0_#000] transition-shadow' />
@@ -164,7 +180,7 @@ function CounterCard({ account }: { account: PublicKey }) {
               Add  Candidate
             </Button>
           </div>
-        </form> : <></>}
+        </form>}
       {/* <CardContent>
         <div className="flex gap-4">
           <Button
@@ -187,17 +203,15 @@ function CounterCard({ account }: { account: PublicKey }) {
             <div className='ml-5 border p-2 rounded mr-5'>
               {candidates?.map((candidate) => (
                 <div>
-                  {candidate.publicKey.toString()}
+                  {candidate.account.name.toString()}
                   <Button
                     className='ml-25'
                     variant="destructive"
-                    onClick={() => {
-                      voteCandidate.mutateAsync({ candidateAccount: candidate.publicKey, electionAccount: account })
-                    }}
+                    onClick={() => handleVote(candidate.publicKey)}
                   >
                     vote
                   </Button>
-                  {/* <div>{candidate.account.totalVotes}</div> */}
+                  <div>{candidate.account.totalVotes}</div>
                 </div>
 
               ))}
@@ -209,7 +223,7 @@ function CounterCard({ account }: { account: PublicKey }) {
             >
               Choose winner
             </Button>
-          </> : <div className='ml-5 bg-green-400 w-120 rounded font-bold p-2'>{accountQuery.data?.winner.toString()}</div>}
+          </> : <div className='ml-5 bg-green-400 w-120 rounded font-bold p-2'>👏{accountQuery.data?.winner.toString()}</div>}
       </div>
     </Card>
   )

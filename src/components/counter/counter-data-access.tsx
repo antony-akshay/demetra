@@ -24,7 +24,8 @@ interface addCandidateArgs {
 
 interface VoteArgs{
   candidateAccount:PublicKey,
-  electionAccount: PublicKey
+  electionAccount: PublicKey,
+  voteAccount:PublicKey
 }
 
 interface chooseWinnerArgs{
@@ -77,7 +78,7 @@ export function useCounterProgram() {
       }).rpc(),
     onSuccess: async (signature) => {
       transactionToast(signature)
-      await accounts.refetch()
+      await candidateAccounts.refetch()
     },
     onError: () => {
       toast.error('Failed to initialize account')
@@ -86,10 +87,11 @@ export function useCounterProgram() {
 
   const voteCandidate = useMutation<string,Error,VoteArgs>({
     mutationKey:['vote','candidate',{cluster}],
-    mutationFn:({candidateAccount,electionAccount})=>(
+    mutationFn:({candidateAccount,electionAccount,voteAccount})=>(
       (program.methods.vote() as any).accounts({
         candidateAccount: candidateAccount,
-        electionAccount:electionAccount
+        electionAccount:electionAccount,
+        voteAccount:voteAccount
       }).rpc()
     ),
     onSuccess: async (signature) => {

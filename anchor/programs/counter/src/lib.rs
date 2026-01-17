@@ -95,7 +95,7 @@ pub struct AddCandidate<'info> {
         seeds=[
             name.as_bytes(),
             election_account.key().as_ref(),
-            payer.key().as_ref()
+            // payer.key().as_ref()
         ],
         bump
     )]
@@ -137,7 +137,7 @@ pub struct Vote<'info> {
         seeds=[
             candidate_account.name.as_bytes(),
             election_account.key().as_ref(),
-            payer.key().as_ref()
+            // payer.key().as_ref()
         ],
         bump
     )]

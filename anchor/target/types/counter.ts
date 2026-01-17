@@ -163,10 +163,6 @@ export type Counter = {
               {
                 "kind": "account",
                 "path": "electionAccount"
-              },
-              {
-                "kind": "account",
-                "path": "payer"
               }
             ]
           }
@@ -251,11 +247,12 @@ export type Counter = {
             "seeds": [
               {
                 "kind": "account",
-                "path": "electionAccount"
+                "path": "candidate_account.name",
+                "account": "candidateAccount"
               },
               {
                 "kind": "account",
-                "path": "payer"
+                "path": "electionAccount"
               }
             ]
           }
