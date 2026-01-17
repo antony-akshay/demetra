@@ -157,6 +157,10 @@ export type Counter = {
           "pda": {
             "seeds": [
               {
+                "kind": "arg",
+                "path": "name"
+              },
+              {
                 "kind": "account",
                 "path": "electionAccount"
               },
@@ -216,6 +220,31 @@ export type Counter = {
           }
         },
         {
+          "name": "voteAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "electionAccount"
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
           "name": "candidateAccount",
           "writable": true,
           "pda": {
@@ -264,6 +293,19 @@ export type Counter = {
         5,
         86,
         255
+      ]
+    },
+    {
+      "name": "voteAccount",
+      "discriminator": [
+        203,
+        238,
+        154,
+        106,
+        200,
+        131,
+        0,
+        41
       ]
     }
   ],
@@ -322,6 +364,18 @@ export type Counter = {
           {
             "name": "owner",
             "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "voteAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

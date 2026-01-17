@@ -93,6 +93,7 @@ pub struct AddCandidate<'info> {
         payer=payer,
         space=8+CandidateAccount::INIT_SPACE,
         seeds=[
+            name.as_bytes(),
             election_account.key().as_ref(),
             payer.key().as_ref()
         ],
@@ -119,8 +120,22 @@ pub struct Vote<'info> {
     pub election_account: Account<'info, ElectionAccount>,
 
     #[account(
+        init,
+        payer=payer,
+        space=8+CandidateAccount::INIT_SPACE,
+        seeds=[
+            b"vote",
+            election_account.key().as_ref(),
+            payer.key().as_ref()
+        ],
+        bump
+    )]
+    pub vote_account:Account<'info,VoteAccount>,
+
+    #[account(
         mut,
         seeds=[
+            candidate_account.name.as_bytes(),
             election_account.key().as_ref(),
             payer.key().as_ref()
         ],
@@ -170,3 +185,9 @@ pub struct CandidateAccount {
     total_votes: u8,
     election_account: Pubkey,
 }
+
+#[account]
+pub struct VoteAccount{
+    bump:u8
+}
+
