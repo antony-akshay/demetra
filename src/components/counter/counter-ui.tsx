@@ -149,9 +149,13 @@ function CounterCard({ account }: { account: PublicKey }) {
         publickey.publicKey!.toBuffer(),
       ], programId);
 
-      voteCandidate.mutateAsync({ candidateAccount: candidateccount, electionAccount: account,voteAccount:voteAccount })
+    voteCandidate.mutateAsync({ candidateAccount: candidateccount, electionAccount: account, voteAccount: voteAccount })
 
   }
+
+  const winnerCandidate = accountQuery.data?.winner ? candidateAccounts.data?.find(
+    (c) => c.publicKey.equals(accountQuery.data?.winner!)
+  ) : undefined
 
   return accountQuery.isLoading ? (
     <span className="loading loading-spinner loading-lg"></span>
@@ -223,7 +227,11 @@ function CounterCard({ account }: { account: PublicKey }) {
             >
               Choose winner
             </Button>
-          </> : <div className='ml-5 bg-green-400 w-120 rounded font-bold p-2'>👏{accountQuery.data?.winner.toString()}</div>}
+          </> : (
+            <div className="ml-5 bg-green-400 w-120 rounded font-bold p-2">
+              👏 Winner: {winnerCandidate?.account.name ?? "Unknown"}
+            </div>
+          )}
       </div>
     </Card>
   )
