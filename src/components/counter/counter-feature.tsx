@@ -1,14 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletButton } from '@/components/solana/solana-provider'
-import { ExplorerLink } from '@/components/cluster/cluster-ui'
 import { AppHero } from '@/components/app-hero'
-import { ellipsify } from '@/lib/utils'
-import { useCounterProgram } from './counter-data-access'
 import { CounterCreate, CounterList } from './counter-ui'
 
 export default function CounterFeature() {
   const { publicKey } = useWallet()
-  const { programId } = useCounterProgram()
 
   return publicKey ? (
     <div>
